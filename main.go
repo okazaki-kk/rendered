@@ -13,10 +13,6 @@ import (
 var chartFileSeparator = []byte("---\n# Source: ")
 var outputDir string
 
-func init() {
-	flag.StringVar(&outputDir, "output-dir", "output", "Output directory")
-}
-
 // scanChartFile is a split function for a Scanner that returns each chart file from helm template output
 func scanChartFile(data []byte, atEOF bool) (advance int, token []byte, err error) {
 	if atEOF && len(data) == 0 {
@@ -47,6 +43,12 @@ func splitContent(content string) (string, string) {
 
 func main() {
 	flag.Parse()
+
+	if len(flag.Args()) > 0 {
+		outputDir = flag.Args()[0]
+	} else {
+		outputDir = "output"
+	}
 
 	// Create output directory if it doesn't exist
 	if _, err := os.Stat(outputDir); os.IsNotExist(err) {
