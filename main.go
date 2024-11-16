@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"path"
@@ -49,11 +48,10 @@ func splitContent(content string) (string, string) {
 func main() {
 	flag.Parse()
 
-	if _, err := os.Stat(outputDir); !os.IsNotExist(err) {
-		log.Printf("Output directory %s already exists", outputDir)
+	// Create output directory if it doesn't exist
+	if _, err := os.Stat(outputDir); os.IsNotExist(err) {
+		os.Mkdir(outputDir, 0755)
 	}
-
-	os.Mkdir(outputDir, 0755)
 
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Split(scanChartFile)
@@ -64,7 +62,6 @@ func main() {
 	for scanner.Scan() {
 		content := scanner.Text()
 		fileName, fileContent := splitContent(content)
-		fmt.Println("filename: ", fileName)
 
 		outputFilePath := path.Join(outputDir, fileName)
 		outputFileDir := path.Dir(outputFilePath)
@@ -73,7 +70,6 @@ func main() {
 		}
 
 		if _, err := os.Stat(outputFilePath); os.IsNotExist(err) {
-			log.Printf("Writing %s\n", outputFilePath)
 			file, err := os.Create(outputFilePath)
 			if err != nil {
 				log.Fatalf("Failed to create file %s: %v", outputFilePath, err)
@@ -81,7 +77,6 @@ func main() {
 			defer file.Close()
 			file.WriteString(fileContent)
 		} else {
-			log.Printf("File %s already exists, overwrrite", outputFilePath)
 			file, err := os.OpenFile(outputFilePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
 			if err != nil {
 				log.Fatalf("Failed to create file %s: %v", outputFilePath, err)
@@ -89,6 +84,5 @@ func main() {
 			defer file.Close()
 			file.WriteString(fileContent)
 		}
-		fmt.Printf("Writing %s\n", outputFilePath)
 	}
 }
