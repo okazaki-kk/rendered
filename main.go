@@ -71,19 +71,19 @@ func main() {
 
 		var file *os.File
 		if _, err := os.Stat(outputFilePath); os.IsNotExist(err) {
-			file, err = os.Create(outputFilePath)
-			if err != nil {
+			if file, err = os.Create(outputFilePath); err != nil {
 				log.Fatalf("Failed to create file %s: %v", outputFilePath, err)
 			}
 		} else {
-			file, err = os.OpenFile(outputFilePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
-			if err != nil {
+			if file, err = os.OpenFile(outputFilePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755); err != nil {
 				log.Fatalf("Failed to open file %s: %v", outputFilePath, err)
 			}
 		}
 
 		defer file.Close()
-		file.WriteString(fileContent)
+		if _, err := file.WriteString(fileContent); err != nil {
+			log.Fatalf("Failed to write to file %s: %v", outputFilePath, err)
+		}
 	}
 	log.Printf("Rendered helm chart files to %s\n", outputDir)
 }
