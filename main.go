@@ -84,5 +84,7 @@ func main() {
 
 		defer file.Close()
 		file.WriteString(fileContent)
+
+		log.Printf("Rendered chart files to %s", outputFilePath)
 	}
 }
