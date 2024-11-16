@@ -69,20 +69,20 @@ func main() {
 			os.MkdirAll(outputFileDir, 0755)
 		}
 
+		var file *os.File
 		if _, err := os.Stat(outputFilePath); os.IsNotExist(err) {
-			file, err := os.Create(outputFilePath)
+			file, err = os.Create(outputFilePath)
 			if err != nil {
 				log.Fatalf("Failed to create file %s: %v", outputFilePath, err)
 			}
-			defer file.Close()
-			file.WriteString(fileContent)
 		} else {
-			file, err := os.OpenFile(outputFilePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+			file, err = os.OpenFile(outputFilePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
 			if err != nil {
-				log.Fatalf("Failed to create file %s: %v", outputFilePath, err)
+				log.Fatalf("Failed to open file %s: %v", outputFilePath, err)
 			}
-			defer file.Close()
-			file.WriteString(fileContent)
 		}
+
+		defer file.Close()
+		file.WriteString(fileContent)
 	}
 }
